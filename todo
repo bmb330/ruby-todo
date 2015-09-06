@@ -1,0 +1,38 @@
+#!/usr/bin/env ruby
+
+require_relative 'todo_list'
+
+TODO_FILE = 'todo.td'
+RJUST = 3
+
+def format_list(todos)
+  todos.list.each_with_index { |item, index| puts "#{index.to_s.rjust(RJUST)} - #{item}" }
+end
+
+if __FILE__ == $0
+  list = TodoList.load(TODO_FILE)
+
+  case ARGV.shift
+  when 'add'
+    if task = ARGV.shift
+      list.add(TodoItem.new(task))
+      list.write(TODO_FILE)
+    else
+      puts "Usage: todo add 'TASK TO ADD'"
+    end
+  when 'done'
+    if index = ARGV.shift
+      index = index.to_i
+      list[index].done = true
+      puts "'#{list[index]}' has been completed"
+      list.write(TODO_FILE)
+    else
+      puts "Usage: todo done TASK-ID-NUMBER"
+    end
+  when 'list'
+    format_list(list)
+  else
+    puts "Usage: todo [OPTION] [TASK]"
+  end
+end
+
